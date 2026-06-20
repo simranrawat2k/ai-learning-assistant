@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import hashlib
+import tempfile
 
 from app.rag.loader import load_pdf
 from app.rag.splitter import split_documents
@@ -53,16 +54,13 @@ if uploaded_file is not None:
 
     file_hash = get_file_hash(file_bytes)
 
-    os.makedirs("data", exist_ok=True)
-
-    temp_path = f"data/{file_hash}_{uploaded_file.name}"
-
-    if not os.path.exists(temp_path):
-        with open(temp_path, "wb") as f:
-            f.write(file_bytes)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+         tmp.write(file_bytes)
+         temp_path = tmp.name
 
     with st.spinner("Processing PDF..."):
         ask = setup_rag(file_hash, temp_path)
+        os.remove(temp_path)
     
     st.session_state.messages = []
 
