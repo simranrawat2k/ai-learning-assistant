@@ -1,10 +1,21 @@
 # AI Learning Assistant
 
-Upload a PDF and ask questions about its contents.
+A RAG-based AI assistant that allows users to upload PDF files and ask questions about them.
 
-Built with:
+## Features
+
+- PDF Upload
+- Semantic Search
+- Chroma Vector Store
+- Groq LLM
+- Source References
+- Chat History
+
+## Tech Stack
+
+- Python
 - Streamlit
 - LangChain
-- Chroma
-- Groq
+- ChromaDB
 - HuggingFace Embeddings
+- Groq
