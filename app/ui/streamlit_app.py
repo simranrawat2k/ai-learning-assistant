@@ -20,6 +20,8 @@ st.write("Upload a PDF and ask questions from it")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "current_file" not in st.session_state:
+    st.session_state.current_file = None
 
 # -----------------------------
 # FILE HASH
@@ -58,11 +60,21 @@ if uploaded_file is not None:
          tmp.write(file_bytes)
          temp_path = tmp.name
 
-    with st.spinner("Processing PDF..."):
-        ask = setup_rag(file_hash, temp_path)
-        os.remove(temp_path)
+    try:
+        with st.spinner("Processing PDF..."):
+            ask = setup_rag(file_hash, temp_path)
     
-    st.session_state.messages = []
+        
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+    
+    if (
+        "current_file" not in st.session_state
+        or st.session_state.current_file != file_hash
+    ):
+        st.session_state.messages = []
+        st.session_state.current_file = file_hash
 
     st.success("PDF processed successfully!")
 
@@ -117,7 +129,7 @@ if ask and question:
                 title = f"Source {i+1}"
 
             with st.expander(title):
-                st.write(doc.page_content)
+                st.write(doc.page_content[:1000])
 
     st.session_state.messages.append(
         {
